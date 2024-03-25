@@ -1,25 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component, Suspense } from 'react';
+import { Route, Routes } from 'react-router-dom';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+// import Home from './modules/Home';
+const HomeComponent = React.lazy(() => import('./modules/Home'));
+const TablesComponent = React.lazy(() => import('./modules/Tables'));
+const WorkerComponent = React.lazy(() => import('./modules/Worker'));
+// import Tables from './modules/Tables';
+
+class App extends Component {
+  render() {
+    return (
+      <Suspense fallback={<div>Loading…</div>}>
+        <Routes>
+          <Route path="/" element={<HomeComponent />} />
+          <Route path="/table" element={<TablesComponent />} />
+          <Route path="/worker" element={<WorkerComponent />} />
+          {/* <Route
+            path="/table"
+            element={React.lazy(() => import('./modules/Tables'))}
+          ></Route> */}
+        </Routes>
+      </Suspense>
+    );
+  }
 }
 
 export default App;
