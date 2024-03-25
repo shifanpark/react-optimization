@@ -1,59 +1,72 @@
 // MyComponent.js
 import React, { useState, useEffect } from 'react';
+import debounce from 'lodash/debounce';
+
+import WorkerFactory from '../../workers/WorkerFactory';
+import myWorker from '../../workers/myWorker.worker';
 
 const MyComponent = () => {
   const [result, setResult] = useState(null);
-  const [worker, setWorker] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [normalResult, setNormalResult] = useState(null);
+  const [fibonacciCount, setFibonacciCount] = useState(0);
 
   useEffect(() => {
     // Create a new web worker
-    const myWorker = new window.Worker('../../workers/index.js');
+    // const myWorker = new WebWorker(worker);
+    if (isLoading) {
+      const workerInstance = new WorkerFactory(myWorker);
 
-    // Set up event listener for messages from the worker
-    myWorker.onmessage = function (event) {
-      console.log('Received result from worker:', event.data);
-      setResult(event.data);
-    };
+      workerInstance.postMessage({ iterations: 42 }); // Send the number 5 to the worker
 
-    // Save the worker instance to state
-    setWorker(myWorker);
+      // Set up event listener for messages from the worker
 
-    // Clean up the worker when the component unmounts
-    return () => {
-      myWorker.terminate();
-    };
-  }, []); // Run this effect only once when the component mounts
+      workerInstance.onmessage = function (event) {
+        console.log('Received result from worker:', event.data);
+        setResult(event.data);
+        workerInstance.terminate();
+        setIsLoading(false);
+      };
 
-  useEffect(() => {
-    // Create a new web worker
-    const myWorker2 = new window.Worker('../../workers/worker2.js');
-
-    // Set up event listener for messages from the worker
-    myWorker2.onmessage = function (event) {
-      console.log('Received result from worker:', event.data);
-      setResult(event.data);
-    };
-
-    // Save the worker instance to state
-    setWorker(myWorker2);
+      return () => {
+        workerInstance.terminate();
+      };
+    }
 
     // Clean up the worker when the component unmounts
-    return () => {
-      myWorker2.terminate();
-    };
-  }, []);
+  }, [isLoading]); // Run this effect only once when the component mounts
 
   const handleClick = () => {
     // Send a message to the worker
-    if (worker) {
-      worker.postMessage(5); // Send the number 5 to the worker
-    }
+
+    setIsLoading(true);
   };
+
+  const fibonacci = (n) => {
+    if (n <= 1) {
+      return n;
+    }
+    return fibonacci(n - 1) + fibonacci(n - 2);
+  };
+
+  const handleNormally = () => {
+    const result = fibonacci(45);
+    setNormalResult(result);
+  };
+
+  const setCount = debounce((e) => {
+    console.log(e);
+    console.log(e.target.value);
+    setFibonacciCount(e.target.value);
+  }, 400);
 
   return (
     <div>
-      <p>Result from the worker: {result}</p>
+      <input onChange={setCount} />
+      <p>Result from the worker: {!isLoading ? result : 'Loading...'}</p>
+      <p>Result from normal: {normalResult}</p>
       <button onClick={handleClick}>Calculate in Web Worker</button>
+      <button onClick={handleNormally}>Calculate normally</button>
     </div>
   );
 };
