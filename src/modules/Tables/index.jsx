@@ -12,7 +12,7 @@ const Tables = () => {
 
   React.useEffect(() => {
     let intArray = [];
-    for (let i = 0; i < 10000; i++) {
+    for (let i = 0; i < 10000000; i++) {
       // intArray = [...intArray, { number: i, name: 'uwu' }];
       intArray.push({ number: i, name: 'uwu' });
     }

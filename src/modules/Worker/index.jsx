@@ -60,6 +60,36 @@ const MyComponent = () => {
     setFibonacciCount(e.target.value);
   }, 400);
 
+  // Handle multiple workers
+
+  // const workerPool = [];
+  // let nextWorkerIndex = 0;
+
+  // function initializeWorkerPool(size) {
+  //   for (let i = 0; i < size; i++) {
+  //     const worker = new Worker('worker-task.js');
+  //     workerPool.push(worker);
+  //     worker.onmessage = handleWorkerMessage;
+  //   }
+  // }
+
+  // // Handle incoming task
+  // function handleTask(taskData) {
+  //   const workerIndex = nextWorkerIndex % workerPool.length;
+  //   const worker = workerPool[workerIndex];
+  //   worker.postMessage(taskData);
+  //   nextWorkerIndex++;
+  // }
+
+  // function handleWorkerMessage(event) {
+  //   console.log('Received result:', event.data);
+  // }
+
+  // initializeWorkerPool(4);
+
+  // const taskData = { fibonancyCount: 20 };
+  // handleTask(taskData);
+
   return (
     <div>
       <input onChange={setCount} />
